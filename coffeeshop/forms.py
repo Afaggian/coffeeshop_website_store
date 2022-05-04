@@ -1,9 +1,11 @@
+from crispy_forms.helper import FormHelper
+from crispy_forms.layout import Submit, Layout, Fieldset
 from django.forms.utils import ErrorList
 from django.utils.translation import gettext as _
 
 from django import forms
 from django.contrib.auth.hashers import make_password
-from django.forms import ModelForm, PasswordInput
+from django.forms import ModelForm, PasswordInput, Textarea
 from django.contrib.auth.models import User
 from .models import UserDetails
 from .widgets import PlaceholderInput, ShowHidePasswordWidget
@@ -15,6 +17,18 @@ class NameForm(forms.Form):
 
 # form used for the user to signup
 class UserForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-userForm'
+        self.helper.form_mothod = 'post'
+        self.helper.form_action = 'signup'
+        self.helper.add_input(Submit('submit', 'Sign up', css_class='btn-success'))
+
+        self.helper.layout = Layout(Fieldset('User Information', 'username', 'password', style='color: green;'),
+                                    Fieldset('Contact data', 'email', style='color: gree;'),
+                                    )
+
     class Meta:
         model = User
         fields = ['username', 'password', 'email']  # __all__ would include all the fields of the module
@@ -40,24 +54,19 @@ class UserForm(ModelForm):
 
 
 class UserDetailsForm(ModelForm):
-    def __init__(
-            self,
-            data=None,
-            files=None,
-            auto_id="id_%s",
-            prefix=None,
-            initial=None,
-            error_class=ErrorList,
-            label_suffix=None,
-            empty_permitted=False,
-            instance=None,
-            use_required_attribute=None,
-            renderer=None,
-    ):
-        super().__init__(data, files, auto_id, prefix, initial, error_class, label_suffix, empty_permitted, instance,
-                         use_required_attribute, renderer)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-userDetailsForm'
+        self.helper.form_mothod = 'post'
+        self.helper.form_action = 'signup'
+        self.helper.add_input(Submit('submit', 'Sign up', css_class='btn-success'))
 
-    lastName = forms.CharField(required=False)
+        self.helper.layout = Layout(
+            Fieldset('Name', 'username', 'firstName', 'lastName', 'zipcode', style="color: grey;"),
+            Fieldset('Contact data', 'email', 'phone', style="color: grey;"),
+            Fieldset('Address details', 'address', 'postcode', style="color: grey;"),
+                                    )
 
     class Meta:
         model = UserDetails
@@ -66,6 +75,9 @@ class UserDetailsForm(ModelForm):
             'username': {
                 'unique': _('Please enter another username, this one is taken.'),
             },
+        }
+        widgets = {
+            "address": Textarea(attrs={'class': 'form-control'}),
         }
 
     '''

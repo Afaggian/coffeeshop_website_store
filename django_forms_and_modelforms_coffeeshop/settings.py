@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'coffeeshop',
     'django.forms',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +53,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'django_forms_and_modelforms_coffeeshop.urls'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
