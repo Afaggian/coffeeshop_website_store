@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'crispy_forms',
 ]
 
+CSRF_COOKIE_HTTPONLY = True
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

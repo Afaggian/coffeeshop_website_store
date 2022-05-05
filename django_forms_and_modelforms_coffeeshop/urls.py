@@ -19,6 +19,7 @@ from coffeeshop import views
 urlpatterns = [
     path('', views.Home, name='home'),
     path('coffeeshop/signup', views.Signup, name='signup'),
+    path(r"^ajax/validate_username/$", views.validate_username, name='validate_username'),
     path('details', views.Details, name='details'),
     path('thanks', views.Thanks, name='thanks'),
     path('order', views.PlaceOrder, name='order'),

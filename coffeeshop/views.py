@@ -1,14 +1,12 @@
-from django.forms import modelformset_factory, inlineformset_factory
-from django.template import loader
-from django.http import HttpResponse, HttpResponseRedirect
-from coffeeshop.forms import UserForm, UserDetailsForm
-from django.shortcuts import render, redirect
 from django.contrib.auth import login, get_user_model
+from django.forms import inlineformset_factory
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render, redirect
+from django.template import loader
 
+from coffeeshop.forms import UserForm, UserDetailsForm
+from coffeeshop.models import Coffee, User
 from .formsets import BaseOrderFormSet
-from .utils import *
-
-from coffeeshop.models import Coffee
 
 
 def Home(request):
@@ -43,6 +41,12 @@ def Signup(request):
     return render(request, 'signup.html', {'form': form})
 
 
+def validate_username(request):
+    username = request.POST.get('username', None)
+    data = {'is_taken': User.objects.filter(username_iexact=username).exists()}
+    return JsonResponse(data)
+
+
 def Details(request):
     if request.method == 'POST':
         form = UserDetailsForm(request.POST)
@@ -58,7 +62,8 @@ def Details(request):
 def PlaceOrder(request):
     # OrderFormSet = modelformset_factory(Coffee, fields=['name', 'size', 'quantity'], max_num=10,
     # extra=5, validate_max=True, can_delete=True)  # the syntax here is the following, first argument is the model the form will be created for "Coffee", followed by the fields we want to include, then the Key arguments
-    OrderFormSet = inlineformset_factory(get_user_model(), Coffee, formset=BaseOrderFormSet, fields=['name', 'size', 'quantity'], max_num=5,
+    OrderFormSet = inlineformset_factory(get_user_model(), Coffee, formset=BaseOrderFormSet,
+                                         fields=['name', 'size', 'quantity'], max_num=5,
                                          extra=1, validate_max=True, can_delete=True)
     user = get_user_model().objects.get(username=request.user.username)
     if request.method == 'POST':

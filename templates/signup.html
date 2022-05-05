@@ -1,5 +1,37 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
+{% block javascript %}
+    <script>
+        const csrftoken = document.querySelector( "[name=csrfmiddlewaretoken]").value
+        $("#id_username").change(function () {
+            var username = $(this).val();
+
+            $.ajaxSetup({
+                beforeSend: function (xhr, settings) {
+                    if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                        xhr.setRequestHeader("X-CSRFToken",
+                            csrftoken);
+                    }
+                }
+            });
+
+            $.ajax({
+                type: "POST",
+                url: {% url "validate_username" %},
+                data: {
+                    'username': username,
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.is_taken) {
+                        alert("This username is already taken. Please choone another one.");
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
 {%  block content %}
+    {% load crispy_forms_tags %}
     {% crispy form %}
 {% endblock %}
